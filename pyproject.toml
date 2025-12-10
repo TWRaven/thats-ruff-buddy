@@ -12,8 +12,8 @@ bark = ["*.mp3"]
 ruff-bark = "bark:main"
 
 [project]
-name = "ruff-pre-commit"
-version = "0.0.3"
+name = "thats-ruff-buddy"
+version = "0.14.1"
 dependencies = [
-    "ruff==0.14.8",
+    "ruff==0.14.1",
 ]

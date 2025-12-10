@@ -4,13 +4,26 @@ import subprocess
 import os
 import platform
 import shutil
+import random
+
+def get_current_volume_mac():
+    """Gets the current volume (0-100)."""
+    result = subprocess.run("osascript -e 'output volume of (get volume settings)'", shell=True, capture_output=True, text=True)
+    return int(result.stdout.strip())
+
+def set_volume_mac(volume_level):
+    """Sets the volume to a specific level (0-100)."""
+    subprocess.run(f"osascript -e 'set volume output volume {volume_level}'", shell=True)
 
 def play_sound(sound_file):
     """Plays a sound file using a portable method."""
     system = platform.system()
     
     if system == "Darwin":  # macOS
+        current_volume = get_current_volume_mac()
+        set_volume_mac(50)
         subprocess.run(["afplay", sound_file], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+        set_volume_mac(current_volume)
     elif system == "Linux":
         if shutil.which("aplay"):
             subprocess.run(["aplay", sound_file], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
@@ -24,6 +37,8 @@ def play_sound(sound_file):
         # Fallback to ffplay if available everywhere else
         if shutil.which("ffplay"):
              subprocess.run(["ffplay", "-nodisp", "-autoexit", sound_file], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+
+failure_strings = ("reformatted", "error")
 
 def main():
     # The first argument is the script name, the rest are arguments for ruff
@@ -51,7 +66,7 @@ def main():
         
         # Check if files were reformatted (usually in stderr for ruff format)
         # Ruff format exit code is 0 even if files are changed, so we check output
-        files_reformatted = "reformatted" in result.stderr or "reformatted" in result.stdout
+        files_reformatted = any(s in result.stderr or s in result.stdout for s in failure_strings)
 
     except FileNotFoundError:
         print("Error: 'ruff' executable not found.", file=sys.stderr)
@@ -63,14 +78,17 @@ def main():
     should_bark = exit_code != 0 or files_reformatted
 
     if should_bark:
-        # Find the sound file relative to this script
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        sound_file = os.path.join(script_dir, "bark.mp3")
+        sound_file = choose_random_mp3()
         
         if os.path.exists(sound_file):
             play_sound(sound_file)
         
     sys.exit(exit_code)
+
+def choose_random_mp3():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    mp3_files = [f for f in os.listdir(script_dir) if f.endswith(".mp3")]
+    return os.path.join(script_dir, random.choice(mp3_files))
 
 if __name__ == "__main__":
     main()
