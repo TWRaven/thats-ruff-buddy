@@ -1,7 +1,7 @@
 - id: ruff-check
   name: ruff check
   description: "Run 'ruff check' for extremely fast Python linting"
-  entry: ruff check --force-exclude
+  entry: python3 bark.py check --force-exclude
   language: python
   types_or: [python, pyi, jupyter]
   args: []
@@ -12,7 +12,7 @@
 - id: ruff-format
   name: ruff format
   description: "Run 'ruff format' for extremely fast Python formatting"
-  entry: ruff format --force-exclude
+  entry: python3 bark.py format --force-exclude
   language: python
   types_or: [python, pyi, jupyter]
   args: []
@@ -24,7 +24,7 @@
 - id: ruff
   name: ruff (legacy alias)
   description: "Run 'ruff check' for extremely fast Python linting"
-  entry: ruff check --force-exclude
+  entry: python3 bark.py check --force-exclude
   language: python
   types_or: [python, pyi, jupyter]
   args: []
