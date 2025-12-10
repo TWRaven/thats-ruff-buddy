@@ -3,11 +3,17 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-py-modules = ["bark", "mirror"]
+packages = ["bark"]
+
+[tool.setuptools.package-data]
+bark = ["*.mp3"]
+
+[project.scripts]
+ruff-bark = "bark:main"
 
 [project]
 name = "ruff-pre-commit"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
     "ruff==0.14.8",
 ]
